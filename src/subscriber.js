@@ -1,4 +1,5 @@
 import { Component as ReactComponent } from 'react';
+import { throttle } from 'lodash';
 import ReduxActionWatcherInternalState from './ReduxActionWatcherInternalState';
 const __reduxActionWatcherInternalState = new ReduxActionWatcherInternalState();
 
@@ -8,6 +9,9 @@ const __reduxActionWatcherInternalState = new ReduxActionWatcherInternalState();
  *
  */
 const subscribeToWatcher = (component, actionsAndCallbacksArray) => {
+
+    const debouncedUnsub = throttle(unsubscribeComponentFromWatcher(component), 500);
+
     try {
         //Check if component is a valid class based ReactComponent
         // if(!(component instanceof  ReactComponent)){
@@ -77,7 +81,7 @@ const subscribeToWatcher = (component, actionsAndCallbacksArray) => {
             if (component.originalComponentWillUnmount) {
                 component.originalComponentWillUnmount();
             }
-            unsubscribeComponentFromWatcher(component);
+            debouncedUnsub();
         }
 
     } catch (e) {
